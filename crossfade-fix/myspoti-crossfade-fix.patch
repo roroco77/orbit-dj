@@ -1,0 +1,23 @@
+diff --git a/base/api-spotify/src/main/kotlin/app/myspoti/spotify/SpotifyPlayer.kt b/base/api-spotify/src/main/kotlin/app/myspoti/spotify/SpotifyPlayer.kt
+index 0000000..0000000 100644
+--- a/base/api-spotify/src/main/kotlin/app/myspoti/spotify/SpotifyPlayer.kt
++++ b/base/api-spotify/src/main/kotlin/app/myspoti/spotify/SpotifyPlayer.kt
+@@ -1419,8 +1419,13 @@
+             return
+         }
+         if (remaining <= 0 || remaining > window) return
+-        // Nothing after it: a fade-out into silence is not a crossfade.
+-        if (s.next == null && upcoming().isEmpty()) return
++        // Spotify's Web Player may omit `next` and the upcoming queue even while the
++        // current playlist/context will continue to another song. Gating the ramp on
++        // that metadata makes the crossfade setting appear to do nothing for normal
++        // Spotify streaming.
++        //
++        // Start the configured fade based on the current track's timing. riseOnSwitch()
++        // brings the sound back up when the next song actually starts, and the existing
++        // failsafe restores the volume if playback ends or the switch never arrives.
++        // On a true final track this can fade to silence before the player stops, but it
++        // is safer than silently ignoring the user's crossfade setting.
+         val own = (media?.own ?: 1.0).coerceIn(0.0, 1.0)
+         // Silent already (volume at 0): there is nothing to fade.
+         if (own <= 0.001) return

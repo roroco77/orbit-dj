@@ -1,0 +1,58 @@
+name: Build Myspoti crossfade fix
+
+on:
+  push:
+    branches:
+      - myspoti-crossfade-build
+    paths:
+      - 'crossfade-fix/myspoti-crossfade-fix.patch'
+      - '.github/workflows/build-myspoti-crossfade.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Compile patched Myspoti APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out patch
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android platform
+        run: sdkmanager "platform-tools" "platforms;android-37"
+
+      - name: Fetch upstream Myspoti source
+        run: git clone --depth 1 --branch main https://github.com/kota-zo/myspoti.git myspoti-src
+
+      - name: Apply crossfade fix
+        run: |
+          git -C myspoti-src apply --check "$GITHUB_WORKSPACE/crossfade-fix/myspoti-crossfade-fix.patch"
+          git -C myspoti-src apply "$GITHUB_WORKSPACE/crossfade-fix/myspoti-crossfade-fix.patch"
+          echo "Patched source commit:"
+          git -C myspoti-src rev-parse HEAD
+          echo "Applied change:"
+          grep -n -A12 -B3 "Spotify's Web Player may omit" myspoti-src/base/api-spotify/src/main/kotlin/app/myspoti/spotify/SpotifyPlayer.kt
+
+      - name: Run unit tests and compile APK
+        working-directory: myspoti-src/base
+        run: ./gradlew --no-daemon testDebugUnitTest assembleDebug
+
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: myspoti-crossfade-fix-debug-apk
+          path: myspoti-src/base/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 14

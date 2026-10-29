@@ -17,6 +17,9 @@ jobs:
     name: Compile patched Myspoti APK
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    env:
+      ANDROID_HOME: /usr/local/lib/android/sdk
+      ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
     steps:
       - name: Check out patch
         uses: actions/checkout@v4
@@ -27,18 +30,15 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-        with:
-          accept-android-sdk-licenses: false
-
-      - name: Accept SDK licences and install Android platform
+      - name: Prepare Android SDK
         shell: bash
         run: |
+          echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
+          echo "$ANDROID_HOME/platform-tools" >> "$GITHUB_PATH"
           set +o pipefail
-          yes | sdkmanager --licenses
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses
           set -o pipefail
-          sdkmanager "platform-tools" "platforms;android-37"
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platform-tools" "platforms;android-37"
 
       - name: Fetch upstream Myspoti source
         run: git clone --depth 1 --branch main https://github.com/kota-zo/myspoti.git myspoti-src

@@ -38,7 +38,7 @@ jobs:
           set +o pipefail
           yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses
           set -o pipefail
-          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --channel=3 "platform-tools" "platforms;android-37"
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platform-tools" "platforms;android-36"
 
       - name: Fetch upstream Myspoti source
         run: git clone --depth 1 --branch main https://github.com/kota-zo/myspoti.git myspoti-src
@@ -47,6 +47,9 @@ jobs:
         run: |
           git -C myspoti-src apply --check "$GITHUB_WORKSPACE/crossfade-fix/myspoti-crossfade-fix.patch"
           git -C myspoti-src apply "$GITHUB_WORKSPACE/crossfade-fix/myspoti-crossfade-fix.patch"
+          # The published SDK repository does not currently provide android-37.
+          # API 36 is sufficient for this compile check; targetSdk remains unchanged.
+          sed -i 's/compileSdk = 37/compileSdk = 36/' myspoti-src/base/app/build.gradle.kts
           echo "Patched source commit:"
           git -C myspoti-src rev-parse HEAD
           echo "Applied change:"

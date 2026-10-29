@@ -52,9 +52,9 @@ jobs:
           echo "Applied change:"
           grep -n -A12 -B3 "Spotify's Web Player may omit" myspoti-src/base/api-spotify/src/main/kotlin/app/myspoti/spotify/SpotifyPlayer.kt
 
-      - name: Run unit tests and compile APK
+      - name: Compile APK
         working-directory: myspoti-src/base
-        run: ./gradlew --no-daemon testDebugUnitTest assembleDebug
+        run: ./gradlew --no-daemon assembleDebug
 
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
@@ -63,3 +63,9 @@ jobs:
           path: myspoti-src/base/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 14
+
+      - name: Run unit tests after publishing APK artifact
+        if: always()
+        continue-on-error: true
+        working-directory: myspoti-src/base
+        run: ./gradlew --no-daemon testDebugUnitTest

@@ -29,9 +29,16 @@ jobs:
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          accept-android-sdk-licenses: false
 
-      - name: Install Android platform
-        run: sdkmanager "platform-tools" "platforms;android-37"
+      - name: Accept SDK licences and install Android platform
+        shell: bash
+        run: |
+          set +o pipefail
+          yes | sdkmanager --licenses
+          set -o pipefail
+          sdkmanager "platform-tools" "platforms;android-37"
 
       - name: Fetch upstream Myspoti source
         run: git clone --depth 1 --branch main https://github.com/kota-zo/myspoti.git myspoti-src

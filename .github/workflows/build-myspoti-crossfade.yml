@@ -38,7 +38,7 @@ jobs:
           set +o pipefail
           yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses
           set -o pipefail
-          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platform-tools" "platforms;android-37"
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --channel=3 "platform-tools" "platforms;android-37"
 
       - name: Fetch upstream Myspoti source
         run: git clone --depth 1 --branch main https://github.com/kota-zo/myspoti.git myspoti-src

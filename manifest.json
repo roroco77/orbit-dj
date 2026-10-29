@@ -1,29 +1,30 @@
 {
   "id": "com.myspoti.orbitdj",
   "name": "Orbit DJ",
-  "version": "1.0.0",
-  "versionCode": 1,
+  "version": "1.1.0",
+  "versionCode": 2,
   "apiVersion": 1,
   "author": "roroco77",
-  "description": "Crea sesiones musicales por mood, descubre canciones reales de Spotify y gestiona la cola desde una interfaz DJ.",
+  "description": "DJ personal con voz, sesiones basadas en tu historial reciente y recomendaciones adaptadas a tus gustos.",
   "homepage": "https://github.com/roroco77/orbit-dj",
   "main": "main.js",
-  "category": "playback",
+  "category": "discovery",
   "tags": [
     "dj",
     "mood",
+    "voice",
+    "recommendations",
+    "history",
     "discovery",
-    "playback",
-    "music",
-    "sessions"
+    "playback"
   ],
-  "changelog": "Primera versión: interfaz de sesiones, búsqueda en Spotify, cola DJ y controles de reproducción.",
+  "changelog": "DJ en Inicio, mix a partir de escuchas recientes, recomendaciones y narración por voz en la página.",
   "welcome": {
-    "message": "Orbit DJ crea sesiones a partir de canciones reales disponibles en tu cuenta de Myspoti/Spotify. Los estilos ordenan la cola; no manipulan el audio ni hacen crossfade real.",
+    "message": "Orbit DJ aparece en Inicio. Actívalo para generar un mix inspirado en tus reproducciones recientes, descubrir música afín y escuchar una introducción hablada cuando abras su página.",
     "steps": [
-      "Abre la página de Orbit DJ desde Extensiones.",
-      "Elige un mood o escribe una idea musical.",
-      "Genera una sesión y añade las canciones a la cola."
+      "Pulsa Orbit DJ en Inicio.",
+      "Genera tu mix personalizado a partir de tu historial reciente.",
+      "Abre la página para escuchar la narración por voz y gestionar la cola."
     ]
   },
   "actions": [
@@ -50,6 +51,14 @@
     {
       "name": "notify",
       "why": "Muestra avisos breves sobre la sesión"
+    },
+    {
+      "name": "home.sections",
+      "why": "Añade el acceso rápido de Orbit DJ al inicio"
+    },
+    {
+      "name": "library.read",
+      "why": "Analiza tus reproducciones recientes para personalizar el mix"
     }
   ]
 }
